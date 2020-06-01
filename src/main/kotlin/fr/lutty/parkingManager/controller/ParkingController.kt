@@ -31,7 +31,7 @@ class ParkingController(private val accessTokenRepository: AccessTokenRepository
         val aToken = accessTokenRepository.findOneByToken(token)
         if (aToken.car) gateService.openCar() else gateService.openPed()
         if (! aToken.unlimited) accessTokenRepository.delete(aToken)
-        return "Welcome ${aToken.dest}, opening the gate !"
+        return "<h1>Welcome ${aToken.dest}, I will open the gate for you!</h1>"
     }
 
     @PostMapping("/generateToken/")
