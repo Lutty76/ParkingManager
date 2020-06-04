@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "fr.lutty"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.2-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -42,11 +42,4 @@ tasks.withType<KotlinCompile> {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
 		jvmTarget = "1.8"
 	}
-}
-tasks.withType<Jar> {
-	manifest {
-		attributes["Main-Class"] = "fr.lutty.parkingManager.ParkingManagerApplicationKt"
-	}
-
-	from(configurations.runtime.get().map {if (it.isDirectory) it else zipTree(it)})
 }
