@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "fr.lutty"
-version = "0.0.2-SNAPSHOT"
+version = "0.0.5-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -24,17 +24,13 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	compileOnly("com.github.jkcclemens:khttp:0.1.0")
+	implementation("com.github.jkcclemens:khttp:0.1.0")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")
 	implementation("mysql:mysql-connector-java:8.0.20")
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}
-}
-
-tasks.withType<Test> {
-	useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile> {

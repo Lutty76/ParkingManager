@@ -37,7 +37,12 @@ class ParkingController(private val accessTokenRepository: AccessTokenRepository
     @PostMapping("/generateToken/")
     fun generateToken(@RequestParam auth: String, @RequestParam dest: String, @RequestParam car: Boolean, @RequestParam exp: Long): AccessToken =
             if (apiAuth == auth) {
-                val atoken: AccessToken = AccessToken(null, tokenService.generateToken(), dest, car, false, LocalDateTime.now().plusHours(exp))
+                val atoken: AccessToken = if (exp < 0)
+                {
+                    AccessToken(null, tokenService.generateToken(), dest, car, true, LocalDateTime.now().plusHours(exp))
+                }else{
+                    AccessToken(null, tokenService.generateToken(), dest, car, false, LocalDateTime.now().plusHours(exp))
+                }
                 accessTokenRepository.save(atoken)
                 atoken
             } else {
