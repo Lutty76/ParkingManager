@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "fr.lutty"
-version = "0.0.5-SNAPSHOT"
+version = "0.0.8-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
