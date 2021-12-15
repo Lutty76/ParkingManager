@@ -25,6 +25,8 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("com.github.jkcclemens:khttp:0.1.0")
+	implementation("org.apache.logging.log4j:log4j-api:2.16.0")
+	implementation("org.apache.logging.log4j:log4j-to-slf4j:2.16.0")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")
 	implementation("mysql:mysql-connector-java:8.0.20")

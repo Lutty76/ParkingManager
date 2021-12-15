@@ -6,6 +6,9 @@ import fr.lutty.parkingManager.repository.AccessTokenRepository
 import fr.lutty.parkingManager.service.GateService
 import fr.lutty.parkingManager.service.TokenService
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 
@@ -27,39 +30,51 @@ class ParkingController(private val accessTokenRepository: AccessTokenRepository
     }
 
     @GetMapping("/open/{token}")
-    fun openGateForm(@PathVariable token: String): String {
+    fun openGateForm(@PathVariable token: String): ResponseEntity<String> {
+        try {
+            val aToken = accessTokenRepository.findOneByToken(token)
 
-        val aToken = accessTokenRepository.findOneByToken(token)
-        return "<h1>Welcome ${aToken.dest}, click the button for open the gate</h1>" +
-                "<h2>Remember, this will work only one time !</h2>" +
-                "<form method='post' action='.'><input type='hidden' name='token' value='"+token+"' /><input style='border:none;background:#22AA77;width:100%;max-width:400px;font-size:32px;' type='submit' value='Open' /></form>"
+            return ResponseEntity("<h1>Welcome ${aToken.dest}, click the button for open the gate</h1>" +
+                    "<h2>Remember, this will work only one time !</h2>" +
+                    "<form method='post' action='.'><input type='hidden' name='token' value='" + token + "' /><input style='border:none;background:#22AA77;width:100%;max-width:400px;font-size:32px;' type='submit' value='Open' /></form>", HttpStatus.OK)
+        } catch (e: EmptyResultDataAccessException) {
+
+            return ResponseEntity("Token Not Found or already Used", HttpStatus.NOT_FOUND)
+        }
+
     }
 
     @PostMapping("/open/")
-    fun openGate(@RequestParam token: String): String {
+    fun openGate(@RequestParam token: String): ResponseEntity<String> {
+        try {
+            val aToken = accessTokenRepository.findOneByToken(token)
 
-        val aToken = accessTokenRepository.findOneByToken(token)
-        if (aToken.car) gateService.openCar() else gateService.openPed()
-        if (! aToken.unlimited) accessTokenRepository.delete(aToken)
-        return "<h1>Welcome ${aToken.dest}, I will open the gate for you!</h1><img src='https://media1.tenor.com/images/832290ffe40003b345af4a838953afc3/tenor.gif' />"
+            if (aToken.car) gateService.openCar() else gateService.openPed()
+            if (!aToken.unlimited) accessTokenRepository.delete(aToken)
+            return ResponseEntity("<h1>Welcome ${aToken.dest}, I will open the gate for you!</h1><img src='https://media1.tenor.com/images/832290ffe40003b345af4a838953afc3/tenor.gif' />", HttpStatus.OK)
+        } catch (e: EmptyResultDataAccessException) {
+
+            return ResponseEntity("Token Not Found or already Used", HttpStatus.NOT_FOUND)
+        }
+
     }
 
     @PostMapping("/openGarage/")
     fun openGarage(@RequestParam auth: String): String {
-
         if (apiAuth == auth) {
             gateService.openParking()
+            return "<h1>Welcome, I will open the garage for you!</h1>"
+        } else {
+            throw UnauthorizedException()
         }
-        return "<h1>Welcome, I will open the garage for you!</h1>"
     }
 
     @PostMapping("/generateToken/")
     fun generateToken(@RequestParam auth: String, @RequestParam dest: String, @RequestParam car: Boolean, @RequestParam exp: Long): AccessToken =
             if (apiAuth == auth) {
-                val atoken: AccessToken = if (exp < 0)
-                {
+                val atoken: AccessToken = if (exp < 0) {
                     AccessToken(null, tokenService.generateToken(), dest, car, true, LocalDateTime.now().plusHours(exp))
-                }else{
+                } else {
                     AccessToken(null, tokenService.generateToken(), dest, car, false, LocalDateTime.now().plusHours(exp))
                 }
                 accessTokenRepository.save(atoken)
